@@ -3,7 +3,7 @@
  * @description Toplu mesaj temizleme (Hybrid & Localized)
  */
 
-const { SlashCommandBuilder, PermissionFlagsBits } = require("discord.js");
+const { SlashCommandBuilder, PermissionFlagsBits, MessageFlags } = require("discord.js");
 
 module.exports = {
     veri: new SlashCommandBuilder()
@@ -17,7 +17,8 @@ module.exports = {
     calistir: async function (etkilesim) {
         const miktar = etkilesim.options.getInteger("amount");
         await etkilesim.channel.bulkDelete(miktar, true);
-        await etkilesim.reply({ content: `🧹 **${miktar}** messages deleted.`, ephemeral: true });
+        if (miktar < 1 || miktar > 100) return etkilesim.reply({ content: "1-100 arası sayı girin.", flags: [MessageFlags.Ephemeral] });
+        await etkilesim.reply({ content: `🧹 **${miktar}** messages deleted.`, flags: [MessageFlags.Ephemeral] });
     },
 
     prefixCalistir: async function (mesaj, args) {

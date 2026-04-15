@@ -3,7 +3,7 @@
  * @description Moderasyon komutu (Hybrid & Localized)
  */
 
-const { SlashCommandBuilder, PermissionFlagsBits } = require("discord.js");
+const { SlashCommandBuilder, PermissionFlagsBits, MessageFlags } = require("discord.js");
 
 module.exports = {
     veri: new SlashCommandBuilder()
@@ -18,7 +18,8 @@ module.exports = {
     calistir: async function (etkilesim) {
         const hedef = etkilesim.options.getMember("target");
         const sure = etkilesim.options.getInteger("duration");
-        if (!hedef || !hedef.moderatable) return etkilesim.reply({ content: "❌ Cannot mute this user.", ephemeral: true });
+        if (!hedef) return etkilesim.reply({ content: "❌ Target not found.", flags: [MessageFlags.Ephemeral] });
+        if (!hedef.moderatable) return etkilesim.reply({ content: "❌ I cannot timeout this user.", flags: [MessageFlags.Ephemeral] });
 
         await hedef.timeout(sure * 60000, "[guardxnsole] Manual mute");
         await etkilesim.reply({ content: `🤐 **${hedef.user.tag}** has been muted for ${sure} minutes.` });

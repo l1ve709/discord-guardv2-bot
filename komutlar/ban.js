@@ -3,7 +3,7 @@
  * @description Moderasyon komutu (Hybrid & Localized)
  */
 
-const { SlashCommandBuilder, PermissionFlagsBits } = require("discord.js");
+const { SlashCommandBuilder, PermissionFlagsBits, MessageFlags } = require("discord.js");
 
 module.exports = {
     veri: new SlashCommandBuilder()
@@ -18,8 +18,8 @@ module.exports = {
     calistir: async function (etkilesim) {
         const hedef = etkilesim.options.getMember("target");
         const sebep = etkilesim.options.getString("reason") || "No reason provided";
-        if (!hedef) return etkilesim.reply({ content: "❌ Target not found.", ephemeral: true });
-        if (!hedef.bannable) return etkilesim.reply({ content: "❌ I cannot ban this user.", ephemeral: true });
+        if (!hedef) return etkilesim.reply({ content: "❌ Target not found.", flags: [MessageFlags.Ephemeral] });
+        if (!hedef.bannable) return etkilesim.reply({ content: "❌ I cannot ban this user.", flags: [MessageFlags.Ephemeral] });
 
         await hedef.ban({ reason: sebep });
         await etkilesim.reply({ content: `🔨 **${hedef.user.tag}** has been banned. Reason: ${sebep}` });

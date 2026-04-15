@@ -4,7 +4,7 @@
  * @author guardxnsole
  */
 
-const tf = require("@tensorflow/tfjs");
+const tf = require("@tensorflow/tfjs"); 
 const nsfw = require("nsfwjs");
 const jpeg = require("jpeg-js");
 const { GifReader } = require("omggif");
@@ -21,10 +21,11 @@ var model = null;
 
 async function modelYukle() {
     if (model) return model;
-    console.log("[guardxnsole] NSFWJS modeli yukleniyor (Saf JS Motoru)...");
-    console.log("[guardxnsole] En yuksek tarama modeli (InceptionV3) kullaniliyor, bu biraz zaman alabilir.");
+    console.log("[guardxnsole] NSFWJS modeli yukleniyor (Native Node.js Backend)...");
+    
+    
     model = await nsfw.load("InceptionV3", { size: 299 });
-    console.log("[guardxnsole] NSFWJS modeli hazir (Saf JS Motoru aktif, InceptionV3 yuklendi).");
+    console.log("[guardxnsole] NSFWJS modeli hazir (Hardware Acceleration aktif, InceptionV3 yuklendi).");
     return model;
 }
 
@@ -34,14 +35,20 @@ var NSFW = {};
 
 
 function jpegTensor(buf) {
-    var d = jpeg.decode(buf, { useTArray: true });
-    var vals = new Int32Array(d.width * d.height * 3);
-    for (var i = 0; i < d.width * d.height; i++) {
-        vals[i * 3] = d.data[i * 4];
-        vals[i * 3 + 1] = d.data[i * 4 + 1];
-        vals[i * 3 + 2] = d.data[i * 4 + 2];
+    try {
+        
+        return tf.node.decodeJpeg(buf, 3);
+    } catch (e) {
+        
+        var d = jpeg.decode(buf, { useTArray: true });
+        var vals = new Int32Array(d.width * d.height * 3);
+        for (var i = 0; i < d.width * d.height; i++) {
+            vals[i * 3] = d.data[i * 4];
+            vals[i * 3 + 1] = d.data[i * 4 + 1];
+            vals[i * 3 + 2] = d.data[i * 4 + 2];
+        }
+        return tf.tensor3d(vals, [d.height, d.width, 3], "int32");
     }
-    return tf.tensor3d(vals, [d.height, d.width, 3], "int32");
 }
 
 
@@ -95,13 +102,21 @@ async function gifDerin(url) {
     var frames = reader.numFrames();
     if (frames <= 0) throw new Error("0 kare");
 
+    
     var hedef = [0];
-    if (frames > 2) hedef.push(Math.floor(frames / 2));
+    if (frames > 20) {
+        
+        hedef.push(Math.floor(frames / 4));
+        hedef.push(Math.floor(frames / 2));
+        hedef.push(Math.floor(frames * 3 / 4));
+    } else if (frames > 2) {
+        hedef.push(Math.floor(frames / 2));
+    }
     if (frames > 1) hedef.push(frames - 1);
 
     var pixels = new Uint8Array(reader.width * reader.height * 4);
 
-    console.log("[guardxnsole] [GIF-DERIN] " + frames + " kare, " + hedef.length + " nokta taraniyor");
+    console.log("[guardxnsole] [GIF-OPTIMIZE] " + frames + " kareden " + hedef.length + " nokta analiz ediliyor");
 
     for (var i = 0; i <= hedef[hedef.length - 1]; i++) {
         try { reader.decodeAndBlitFrameRGBA(i, pixels); } catch(e) { continue; }
@@ -109,7 +124,6 @@ async function gifDerin(url) {
 
         var tensor = rgbaTensor(reader.width, reader.height, pixels);
         var sonuc = await tara(tensor);
-        console.log("[guardxnsole] [GIF-DERIN] Kare " + i + ": " + sonuc.detay);
         if (sonuc.ihlal) return sonuc;
     }
     return { ihlal: false, detay: "Temiz" };
@@ -121,17 +135,16 @@ async function videoTaraFfmpeg(url) {
     try {
         var buf = await indir(url);
         fs.writeFileSync(gecici, buf);
-        console.log("[guardxnsole] [VIDEO] " + (buf.length / 1024 / 1024).toFixed(1) + "MB indirildi");
 
         var kareBuf = await new Promise(function(resolve, reject) {
             var parts = [];
             var out = new Writable({
                 write: function(chunk, enc, next) { parts.push(chunk); next(); }
             });
-            var timer = setTimeout(function() { reject(new Error("Zaman asimi")); }, 20000);
+            var timer = setTimeout(function() { reject(new Error("Zaman asimi")); }, 25000);
 
             ffmpeg(gecici)
-                .seekInput("00:00:00.000")
+                .seekInput("0.5") 
                 .frames(1)
                 .format("image2")
                 .videoCodec("mjpeg")
@@ -150,8 +163,6 @@ async function videoTaraFfmpeg(url) {
     }
 }
 
-
-
 NSFW.kontrolEt = async function(mesaj) {
     var ekler = mesaj.attachments ? mesaj.attachments.size : 0;
     var embedler = mesaj.embeds ? mesaj.embeds.length : 0;
@@ -161,21 +172,6 @@ NSFW.kontrolEt = async function(mesaj) {
     try { ayar = await Ayar.getir(mesaj.guild.id); } catch(e) { return false; }
     if (!ayar || !ayar.nsfwKoruma) return false;
 
-    
-    if (ekler > 0) {
-        console.log("[guardxnsole] [DEBUG] " + ekler + " attachment bulundu:");
-        mesaj.attachments.forEach(function(a) {
-            console.log("  -> " + (a.name || "?") + " | contentType=" + (a.contentType || "YOK") + " | url=" + a.url.substring(0, 80));
-        });
-    }
-    if (embedler > 0) {
-        console.log("[guardxnsole] [DEBUG] " + embedler + " embed bulundu:");
-        mesaj.embeds.forEach(function(e, i) {
-            console.log("  -> embed[" + i + "] type=" + (e.type || "?") + " | video=" + !!(e.video) + " | image=" + !!(e.image) + " | thumbnail=" + !!(e.thumbnail));
-        });
-    }
-
-    
     var liste = [];
 
     
@@ -198,18 +194,14 @@ NSFW.kontrolEt = async function(mesaj) {
     
     if (mesaj.embeds) {
         mesaj.embeds.forEach(function(e, i) {
-            
-            
             var t_u = e.thumbnail ? (e.thumbnail.proxyURL || e.thumbnail.url) : null;
             var i_u = e.image ? (e.image.proxyURL || e.image.url) : null;
             var v_u = e.video ? e.video.url : null;
 
             if (v_u) {
-                
                 liste.push({ url: v_u, ad: "embed_vid_" + i, tip: "video" });
             } 
             else if (t_u || i_u) {
-                
                 var tespitUrl = t_u || i_u;
                 var hedefLink = (e.url || tespitUrl).toLowerCase();
 
@@ -222,87 +214,57 @@ NSFW.kontrolEt = async function(mesaj) {
         });
     }
 
-    console.log("[guardxnsole] [DEBUG] Taranacak medya sayisi: " + liste.length);
     if (liste.length === 0) return false;
 
-    
     for (var idx = 0; idx < liste.length; idx++) {
         var m = liste[idx];
         try {
             var sonuc = null;
 
             if (m.tip === "gif") {
-                console.log("[guardxnsole] [GIF] " + m.ad + " taraniyor...");
-                
                 try {
                     sonuc = await proxyIleTara(m.url);
-                    console.log("[guardxnsole] [GIF] Proxy sonuc: " + sonuc.detay);
                 } catch(pe) {
-                    console.log("[guardxnsole] [GIF] Proxy basarisiz (" + pe.message + "), dogrudan indirme deneniyor...");
-                    
                     try {
                         sonuc = await gifDerin(m.url);
                     } catch(ge) {
-                        console.error("[guardxnsole] [GIF] omggif de basarisiz: " + ge.message);
                         sonuc = { ihlal: false, detay: "Taranamadi" };
                     }
                 }
-
                 
                 if (sonuc && !sonuc.ihlal) {
                     try {
                         var derinSonuc = await gifDerin(m.url);
-                        if (derinSonuc.ihlal) {
-                            console.log("[guardxnsole] [GIF] Derin taramada ihlal bulundu!");
-                            sonuc = derinSonuc;
-                        }
-                    } catch(de) {
-                        
-                    }
+                        if (derinSonuc.ihlal) sonuc = derinSonuc;
+                    } catch(de) {}
                 }
 
             } else if (m.tip === "video") {
-                console.log("[guardxnsole] [VIDEO] " + m.ad + " taraniyor...");
                 try {
                     sonuc = await videoTaraFfmpeg(m.url);
-                    console.log("[guardxnsole] [VIDEO] Sonuc: " + sonuc.detay);
                 } catch(ve) {
-                    console.error("[guardxnsole] [VIDEO] FFmpeg hatasi: " + ve.message);
                     sonuc = { ihlal: false, detay: "Taranamadi" };
                 }
 
             } else {
-                console.log("[guardxnsole] [GORSEL] " + m.ad + " taraniyor...");
                 try {
                     sonuc = await proxyIleTara(m.url);
-                    console.log("[guardxnsole] [GORSEL] Sonuc: " + sonuc.detay);
                 } catch(ie) {
-                    
-                    console.log("[guardxnsole] [GORSEL] Proxy basarisiz, dogrudan indirme...");
                     try {
                         var buf = await indir(m.url);
                         var tensor = jpegTensor(buf);
                         sonuc = await tara(tensor);
                     } catch(ie2) {
-                        console.error("[guardxnsole] [GORSEL] Hata: " + ie2.message);
                         sonuc = { ihlal: false, detay: "Taranamadi" };
                     }
                 }
             }
 
-            
             if (sonuc && sonuc.ihlal) {
-                console.log("[guardxnsole] !!! NSFW IHLALI: " + m.tip + " / " + m.ad);
-
                 await mesaj.delete().catch(function() {});
 
                 var basliklar = { gif: "⚠️ NSFW GIF TESPİT EDİLDİ", video: "⚠️ NSFW VİDEO TESPİT EDİLDİ", gorsel: "⚠️ NSFW İÇERİK TESPİT EDİLDİ" };
-                var uyarilar = {
-                    gif: ", gönderdiğiniz GIF'te uygunsuz içerik tespit edildi ve silindi!",
-                    video: ", gönderdiğiniz videoda uygunsuz içerik tespit edildi ve silindi!",
-                    gorsel: ", gönderdiğiniz görselde uygunsuz içerik tespit edildi ve silindi!"
-                };
-
+                
                 await kayitci.log(mesaj.guild, basliklar[m.tip] || basliklar.gorsel,
                     "Kullanici: " + mesaj.author.tag + " (" + mesaj.author.id + ")\n" +
                     "Kanal: <#" + mesaj.channel.id + ">\n" +

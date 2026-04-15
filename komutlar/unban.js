@@ -3,7 +3,7 @@
  * @description Dinamik ban kaldırma komutu (Hybrid & Localized)
  */
 
-const { SlashCommandBuilder, PermissionFlagsBits, EmbedBuilder } = require("discord.js");
+const { SlashCommandBuilder, PermissionFlagsBits, MessageFlags } = require("discord.js");
 const Kayitci = require("../tools/kayitci");
 
 module.exports = {
@@ -21,7 +21,7 @@ module.exports = {
             await etkilesim.guild.members.unban(id);
             await etkilesim.reply({ content: `✅ <@${id}> (${id}) ban kaldırıldı.` });
         } catch (e) {
-            await etkilesim.reply({ content: `❌ Ban kaldırılamadı. Hata: ${e.message}`, ephemeral: true });
+            await etkilesim.reply({ content: `❌ Ban kaldırılamadı. Hata: ${e.message}`, flags: [MessageFlags.Ephemeral] });
         }
     },
 

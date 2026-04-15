@@ -3,7 +3,7 @@
  * @description Akıllı kurulum sistemi (4 Dil Desteği + Prefix Desteği)
  */
 
-const { SlashCommandBuilder, PermissionFlagsBits, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, ChannelType } = require("discord.js");
+const { SlashCommandBuilder, PermissionFlagsBits, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, ChannelType, MessageFlags } = require("discord.js");
 const Ayar = require("../models/ayar.model");
 const Kayitci = require("../tools/kayitci");
 const config = require("../config");
@@ -23,7 +23,7 @@ module.exports = {
     calistir: async function (etkilesim) {
         if (etkilesim.user.id !== etkilesim.guild.ownerId && etkilesim.user.id !== config.sahipId) {
             const m = await Kayitci.mesaj(etkilesim.guild.id, "GENEL.SAHIP_YOK");
-            return await etkilesim.reply({ content: m, ephemeral: true });
+            return await etkilesim.reply({ content: m, flags: [MessageFlags.Ephemeral] });
         }
 
         const langEmbed = new EmbedBuilder()
@@ -39,7 +39,7 @@ module.exports = {
                 new ButtonBuilder().setCustomId('lang_ar').setLabel('العربية').setEmoji('🇸🇦').setStyle(ButtonStyle.Primary)
             );
 
-        const yanit = await etkilesim.reply({ embeds: [langEmbed], components: [langRow] });
+        const yanit = await etkilesim.reply({ embeds: [langEmbed], components: [langRow], fetchReply: true });
         const filtre = i => i.user.id === etkilesim.user.id;
 
         try {
@@ -47,7 +47,7 @@ module.exports = {
             const secilenDil = langSecim.customId.split('_')[1]; 
             await Ayar.guncelle(etkilesim.guild.id, "dil", secilenDil);
 
-            this.anaMenu(langSecim, sunucuId = etkilesim.guild.id);
+            this.anaMenu(langSecim, etkilesim.guild.id);
         } catch (e) {
             await etkilesim.editReply({ content: "Error/Timeout", embeds: [], components: [] }).catch(()=>{});
         }
@@ -76,11 +76,19 @@ module.exports = {
                 new ButtonBuilder().setCustomId('kurulum_prefix').setLabel((await getMetin("KURULUM.BUTON_PREFIX")).replace("{durum}", ayar.prefixAktif ? "✅" : "❌")).setStyle(ayar.prefixAktif ? ButtonStyle.Success : ButtonStyle.Secondary)
             );
 
-        const yanit = ctx.update ? await ctx.update({ embeds: [embed], components: [row] }) : await ctx.edit({ embeds: [embed], components: [row] });
-        const filtre = i => i.user.id === (ctx.user ? ctx.user.id : ctx.mentions.users.first()?.id || ctx.author?.id);
+        
+        if (ctx.update) {
+            await ctx.update({ embeds: [embed], components: [row] });
+        } else if (ctx.editReply) {
+            await ctx.editReply({ embeds: [embed], components: [row] });
+        } else if (ctx.edit) {
+            await ctx.edit({ embeds: [embed], components: [row] });
+        }
+
+        const filtre = i => i.user.id === (ctx.user ? ctx.user.id : ctx.author?.id);
 
         try {
-            const secim = await (ctx.awaitMessageComponent ? ctx : ctx.channel).awaitMessageComponent({ filter: filtre, time: 60000 });
+            const secim = await (ctx.message ? ctx.message : ctx).awaitMessageComponent({ filter: filtre, time: 60000 });
             
             if (secim.customId === 'kurulum_prefix') {
                 const yeni = !ayar.prefixAktif;
@@ -111,6 +119,6 @@ module.exports = {
                 const msg = (await getMetin("KURULUM.TAMAMLANDI_TEKLI")).replace("{kanal}", `<#${logKanal.id}>`);
                 return await secim.editReply({ content: msg });
             }
-        } catch (e) { }
+        } catch (e) {  }
     }
 };

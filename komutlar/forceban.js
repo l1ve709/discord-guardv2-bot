@@ -3,7 +3,7 @@
  * @description ID ile zorla yasaklama komutu (Hybrid & Localized)
  */
 
-const { SlashCommandBuilder, PermissionFlagsBits } = require("discord.js");
+const { SlashCommandBuilder, PermissionFlagsBits, MessageFlags } = require("discord.js");
 
 module.exports = {
     veri: new SlashCommandBuilder()
@@ -20,7 +20,8 @@ module.exports = {
             await etkilesim.guild.members.ban(id, { reason: "[guardxnsole] Forceban by " + etkilesim.user.tag });
             await etkilesim.reply({ content: `🔨 \`${id}\` başarıyla sunucudan (ID ile) yasaklandı.` });
         } catch (e) {
-            await etkilesim.reply({ content: `❌ İşlem başarısız. Hata: ${e.message}`, ephemeral: true });
+           if (!id) return etkilesim.reply({ content: "Lütfen bir ID girin. -- guardxnsole", flags: [MessageFlags.Ephemeral] });
+           await etkilesim.reply({ content: `❌ İşlem başarısız. Hata: ${e.message}`, flags: [MessageFlags.Ephemeral] });
         }
     },
 
