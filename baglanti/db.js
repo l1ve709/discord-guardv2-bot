@@ -9,9 +9,6 @@ const yol = require("path");
 
 var db = null;
 
-/**
- * Veritabanına bağlanır ve gerekli tabloları sırayla oluşturur.
- */
 function veritabaniBaglan() {
     return new Promise((resolve, reject) => {
         const dbDir = yol.join(__dirname, '..', 'database');
@@ -20,18 +17,15 @@ function veritabaniBaglan() {
         
         db = new sqlite3.Database(dbPath, (err) => {
             if (err) return reject(err);
-            
-            
+
             db.serialize(async () => {
                 try {
                     console.log("[guardxnsole] Veritabanı tabloları kontrol ediliyor...");
-                    
-                    
+
                     await runQuery(`CREATE TABLE IF NOT EXISTS ayarlar (sunucu_id TEXT PRIMARY KEY)`);
                     await runQuery(`CREATE TABLE IF NOT EXISTS whitelist (id INTEGER PRIMARY KEY AUTOINCREMENT, sunucu_id TEXT, kullanici_id TEXT, ekleyen_id TEXT, tarih DATETIME DEFAULT CURRENT_TIMESTAMP)`);
                     await runQuery(`CREATE TABLE IF NOT EXISTS kayitlar (sunucu_id TEXT, kullanici_id TEXT, kullanici_adi TEXT, islem TEXT, detay TEXT, ceza TEXT, tarih DATETIME DEFAULT CURRENT_TIMESTAMP)`);
 
-                    
                     const sutunlar = [
                         { ad: "kanal_koruma", tip: "INTEGER DEFAULT 1" },
                         { ad: "rol_koruma", tip: "INTEGER DEFAULT 1" },
@@ -73,7 +67,6 @@ function veritabaniBaglan() {
                         { ad: "prefix_aktif", tip: "INTEGER DEFAULT 0" }
                     ];
 
-                    
                     const rows = await allQuery(`PRAGMA table_info(ayarlar)`);
                     const mevcutSutunlar = rows.map(r => r.name);
                     
@@ -95,9 +88,6 @@ function veritabaniBaglan() {
     });
 }
 
-/**
- * Yardımcı fonksiyon: db.run promisified
- */
 function runQuery(sql, params = []) {
     return new Promise((res, rej) => {
         db.run(sql, params, (err) => {
@@ -107,9 +97,6 @@ function runQuery(sql, params = []) {
     });
 }
 
-/**
- * Yardımcı fonksiyon: db.all promisified
- */
 function allQuery(sql, params = []) {
     return new Promise((res, rej) => {
         db.all(sql, params, (err, rows) => {
@@ -119,9 +106,6 @@ function allQuery(sql, params = []) {
     });
 }
 
-/**
- * Veritabanı havuzunu simüle eder.
- */
 function havuzGetir() {
     return {
         execute: async function (query, params = []) {

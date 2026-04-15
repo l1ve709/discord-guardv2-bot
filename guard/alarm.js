@@ -19,7 +19,6 @@ Alarm.baslat = async function (sunucu) {
 
     alarmDurumu[sunucu.id] = true;
 
-    
     var embed = new EmbedBuilder()
         .setTitle("🚨 ACİL DURUM: SUNUCU ALARMI 🚨")
         .setDescription(`Sunucuda kritik bir tehlike (Raid vb.) algılandığı için **ALARM** modu başlatıldı!\n\n**Yapılan İşlemler:**\n- Tüm yazışma kanalları @everyone için kilitlendi.\n- Sunucu koruması maksimum seviyeye çıkarıldı.`)
@@ -29,7 +28,6 @@ Alarm.baslat = async function (sunucu) {
 
     await kayitci.log(sunucu, "ALARM BASLATILDI", "@everyone **SUNUCU SALDIRI ALTINDA!**", 0xff0000);
 
-    
     var kanallar = sunucu.channels.cache.filter(c => c.isTextBased());
     var herkes = sunucu.roles.everyone;
 
@@ -47,7 +45,6 @@ Alarm.durdur = async function (sunucu) {
 
     delete alarmDurumu[sunucu.id];
 
-    
     var kanallar = sunucu.channels.cache.filter(c => c.isTextBased());
     var herkes = sunucu.roles.everyone;
 

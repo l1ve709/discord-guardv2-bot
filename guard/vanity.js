@@ -27,8 +27,6 @@ VanityKoruma.kontrolEt = async function (eskiSunucu, yeniSunucu, istemci) {
         if (!sonuc.ayarlar || !sonuc.ayarlar.vanityKoruma) return;
         if (!sonuc.ihlal) return;
 
-        
-        
         try {
             await yeniSunucu.setVanityCode(eskiSunucu.vanityURLCode, "[guardxnsole] yetkisiz URL değişimi engellendi");
         } catch (e) {

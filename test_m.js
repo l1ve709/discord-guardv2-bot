@@ -9,8 +9,7 @@ const yapilandirma = require("./config");
 const istemci = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent] });
 
 istemci.once("ready", async () => {
-    
-    
+
     console.log("Hazir");
     process.exit(0);
 });

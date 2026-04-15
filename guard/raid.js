@@ -31,7 +31,6 @@ async function katilimKontrol(uye) {
             console.log("[guardxnsole] RAID TESPIT: " + uye.guild.name);
             try { await uye.guild.setVerificationLevel(4, "[guardxnsole] raid"); } catch (e) {  }
 
-            
             await Alarm.baslat(uye.guild);
 
             await kayitci.log(uye.guild, "RAID TESPIT",

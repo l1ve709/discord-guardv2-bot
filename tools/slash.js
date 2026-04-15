@@ -17,12 +17,7 @@ async function komutKaydet(komutlar, istemci) {
     const v = komutlar.map(k => k.veri.toJSON());
 
     try {
-        
-        
-        
-        
 
-        
         await rest.put(Routes.applicationCommands(yapilandirma.istemciId), { body: v });
         console.log(`[guardxnsole] Toplam ${v.length} adet komut senkronize edildi.`);
     } catch (h) {

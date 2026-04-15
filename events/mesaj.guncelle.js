@@ -18,7 +18,6 @@ module.exports = {
         if (!yeniMesaj.guild) return;
         if (yeniMesaj.author && yeniMesaj.author.bot) return;
 
-        
         var embedVar = yeniMesaj.embeds && yeniMesaj.embeds.length > 0;
         var ekVar = yeniMesaj.attachments && yeniMesaj.attachments.size > 0;
 

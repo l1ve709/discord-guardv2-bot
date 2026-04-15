@@ -28,19 +28,16 @@ BotKoruma.kontrolEt = async function (uye, istemci) {
 
         if (!sonuc.ayarlar || !sonuc.ayarlar.botKoruma) return;
 
-        
         var dk = await sunucu.fetchAuditLogs({ limit: 1, type: AuditLogEvent.BotAdd });
         var giris = dk.entries.first();
         if (!giris) return;
         if (giris.target.id !== uye.id) return;
 
         var yurutucu = giris.executor;
-        
-        
+
         var wl = await Whitelist.kontrol(sunucu.id, yurutucu.id);
         if (wl) return;
 
-        
         try {
             await uye.ban({ reason: "[guardxnsole] yetkisiz bot girişi" });
             console.log("[guardxnsole] yetkisiz bot yasaklandi: " + uye.user.tag);

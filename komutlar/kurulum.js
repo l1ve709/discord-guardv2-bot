@@ -76,7 +76,6 @@ module.exports = {
                 new ButtonBuilder().setCustomId('kurulum_prefix').setLabel((await getMetin("KURULUM.BUTON_PREFIX")).replace("{durum}", ayar.prefixAktif ? "✅" : "❌")).setStyle(ayar.prefixAktif ? ButtonStyle.Success : ButtonStyle.Secondary)
             );
 
-        
         if (ctx.update) {
             await ctx.update({ embeds: [embed], components: [row] });
         } else if (ctx.editReply) {

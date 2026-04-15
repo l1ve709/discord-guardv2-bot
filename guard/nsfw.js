@@ -22,8 +22,7 @@ var model = null;
 async function modelYukle() {
     if (model) return model;
     console.log("[guardxnsole] NSFWJS modeli yukleniyor (Native Node.js Backend)...");
-    
-    
+
     model = await nsfw.load("InceptionV3", { size: 299 });
     console.log("[guardxnsole] NSFWJS modeli hazir (Hardware Acceleration aktif, InceptionV3 yuklendi).");
     return model;
@@ -32,7 +31,6 @@ async function modelYukle() {
 modelYukle().catch(e => console.error("[guardxnsole] NSFWJS yukleme hatasi:", e.message));
 
 var NSFW = {};
-
 
 function jpegTensor(buf) {
     try {
@@ -51,7 +49,6 @@ function jpegTensor(buf) {
     }
 }
 
-
 function rgbaTensor(w, h, buf) {
     var vals = new Int32Array(w * h * 3);
     for (var i = 0; i < w * h; i++) {
@@ -62,13 +59,11 @@ function rgbaTensor(w, h, buf) {
     return tf.tensor3d(vals, [h, w, 3], "int32");
 }
 
-
 async function indir(url) {
     var r = await fetch(url, { headers: { "User-Agent": "Mozilla/5.0 DiscordBot" } });
     if (!r.ok) throw new Error("HTTP " + r.status);
     return Buffer.from(await r.arrayBuffer());
 }
-
 
 async function tara(tensor) {
     var ai = await modelYukle();
@@ -85,7 +80,6 @@ async function tara(tensor) {
     return { ihlal: ihlal, detay: detay };
 }
 
-
 async function proxyIleTara(url) {
     var jpegUrl = url.replace("cdn.discordapp.com", "media.discordapp.net");
     if (jpegUrl.indexOf("?") !== -1) jpegUrl += "&format=jpeg";
@@ -95,14 +89,12 @@ async function proxyIleTara(url) {
     return await tara(tensor);
 }
 
-
 async function gifDerin(url) {
     var buf = await indir(url);
     var reader = new GifReader(buf);
     var frames = reader.numFrames();
     if (frames <= 0) throw new Error("0 kare");
 
-    
     var hedef = [0];
     if (frames > 20) {
         
@@ -128,7 +120,6 @@ async function gifDerin(url) {
     }
     return { ihlal: false, detay: "Temiz" };
 }
-
 
 async function videoTaraFfmpeg(url) {
     var gecici = path.join(__dirname, "..", "database", "nsfw_tmp_" + Date.now() + ".mp4");
@@ -174,7 +165,6 @@ NSFW.kontrolEt = async function(mesaj) {
 
     var liste = [];
 
-    
     if (mesaj.attachments) {
         mesaj.attachments.forEach(function(a) {
             var ct = (a.contentType || "").toLowerCase();
@@ -191,7 +181,6 @@ NSFW.kontrolEt = async function(mesaj) {
         });
     }
 
-    
     if (mesaj.embeds) {
         mesaj.embeds.forEach(function(e, i) {
             var t_u = e.thumbnail ? (e.thumbnail.proxyURL || e.thumbnail.url) : null;
