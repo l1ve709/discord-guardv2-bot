@@ -12,22 +12,22 @@ module.exports = {
             TAMAM: "Tamamlandı"
         },
         KURULUM: {
-            BASLIK: "🛡️ guardxnsole | Akıllı Kurulum Sistemi",
+            BASLIK: "guardxnsole | Akıllı Kurulum Sistemi",
             ACIKLAMA: "Sunucunuzun güvenliğini yapılandırmak için aşağıdan bir stil seçin:",
             BUTON_COKLU: "Çoklu Log Kur",
             BUTON_TEKLI: "Tekli Log Kur",
             BUTON_NSFW: "NSFW Aç/Kapat",
             BUTON_PREFIX: "Prefix Komutları ({durum})",
-            TAMAMLANDI_TEKLI: "✅ Tekli Log Kurulumu Tamamlandı! Kanal: {kanal}",
-            NSFW_ACIK: "✅ NSFW Koruması Açıldı!",
-            NSFW_KAPALI: "❌ NSFW Koruması Kapatıldı!",
-            PREFIX_ACIK: "✅ Prefix Komutları Aktif! Prefix: {p}",
-            PREFIX_KAPALI: "❌ Prefix Komutları Devre Dışı!"
+            TAMAMLANDI_TEKLI: "Tekli Log Kurulumu Tamamlandı! Kanal: {kanal}",
+            NSFW_ACIK: "NSFW Koruması Açıldı!",
+            NSFW_KAPALI: "NSFW Koruması Kapatıldı!",
+            PREFIX_ACIK: "Prefix Komutları Aktif! Prefix: {p}",
+            PREFIX_KAPALI: "Prefix Komutları Devre Dışı!"
         },
         GUARD: {
-            NSFW_UYARI: "🔞 {uye}, gönderdiğiniz resim müstehcen içerik barındırdığı için silindi.",
-            SPAM_UYARI: "⚠️ {uye}, spam yapmayı bırakmalısın! ({sure} saniye susturuldun)",
-            REKLAM_UYARI: "🚫 {uye}, reklam yapmak yasaktır!"
+            NSFW_UYARI: "{uye}, gönderdiğiniz resim müstehcen içerik barındırdığı için silindi.",
+            SPAM_UYARI: "{uye}, spam yapmayı bırakmalısın! ({sure} saniye susturuldun)",
+            REKLAM_UYARI: "{uye}, reklam yapmak yasaktır!"
         },
         KANALLAR: {
             GUARD_LOG: "guard-log",
@@ -61,22 +61,22 @@ module.exports = {
             TAMAM: "Completed"
         },
         KURULUM: {
-            BASLIK: "🛡️ guardxnsole | Smart Setup System",
+            BASLIK: "guardxnsole | Smart Setup System",
             ACIKLAMA: "Select a style below to configure your server's security:",
             BUTON_COKLU: "Multi Log Setup",
             BUTON_TEKLI: "Single Log",
             BUTON_NSFW: "Toggle NSFW",
             BUTON_PREFIX: "Prefix Commands ({durum})",
-            TAMAMLANDI_TEKLI: "✅ Single Log Setup Complete! Channel: {kanal}",
-            NSFW_ACIK: "✅ NSFW Protection Enabled!",
-            NSFW_KAPALI: "❌ NSFW Protection Disabled!",
-            PREFIX_ACIK: "✅ Prefix Commands Enabled! Prefix: {p}",
-            PREFIX_KAPALI: "❌ Prefix Commands Disabled!"
+            TAMAMLANDI_TEKLI: "Single Log Setup Complete! Channel: {kanal}",
+            NSFW_ACIK: "NSFW Protection Enabled!",
+            NSFW_KAPALI: "NSFW Protection Disabled!",
+            PREFIX_ACIK: "Prefix Commands Enabled! Prefix: {p}",
+            PREFIX_KAPALI: "Prefix Commands Disabled!"
         },
         GUARD: {
-            NSFW_UYARI: "🔞 {uye}, the image you sent was deleted because it contains explicit content.",
-            SPAM_UYARI: "⚠️ {uye}, you must stop spamming! (Muted for {sure} seconds)",
-            REKLAM_UYARI: "🚫 {uye}, advertising is prohibited!"
+            NSFW_UYARI: "{uye}, the image you sent was deleted because it contains explicit content.",
+            SPAM_UYARI: "{uye}, you must stop spamming! (Muted for {sure} seconds)",
+            REKLAM_UYARI: "{uye}, advertising is prohibited!"
         },
         KANALLAR: {
             GUARD_LOG: "protection-log",

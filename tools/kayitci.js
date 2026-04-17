@@ -18,7 +18,7 @@ Kayitci.log = async function (sunucu, baslik, aciklama, renk, tur) {
         if (!hedefKanalId) return;
         var kanal = sunucu.channels.cache.get(hedefKanalId);
         if (!kanal) return;
-        var g = new EmbedBuilder().setTitle(baslik).setDescription(aciklama).setColor(renk || 0x2c3e50).setFooter({ text: "guardxnsole" }).setTimestamp();
+        var g = new EmbedBuilder().setTitle(baslik).setDescription(aciklama).setColor(renk || 0x2b2d31).setFooter({ text: "guardxnsole" }).setTimestamp();
         await kanal.send({ embeds: [g] });
     } catch (h) {}
 };

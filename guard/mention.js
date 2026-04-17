@@ -16,7 +16,7 @@ MentionKoruma.kontrolEt = async function (mesaj) {
     if (!mesaj.guild) return false;
     if (mesaj.author.bot) return false;
     if (mesaj.author.id === mesaj.guild.ownerId) return false;
-    if (mesaj.author.id === yapilandirma.sahipId) return false;
+    if (yapilandirma.sahipler.includes(mesaj.author.id)) return false;
 
     var ayar = await Ayar.getir(mesaj.guild.id);
     if (!ayar.mentionLimit) return false;

@@ -8,7 +8,7 @@ require("dotenv").config();
 module.exports = {
     botTokeni: process.env.BOT_TOKENI,
     istemciId: process.env.ISTEMCI_ID,
-    sahipId: process.env.SAHIP_ID,
+    sahipler: process.env.SAHIP_ID ? process.env.SAHIP_ID.split(",") : [],
 
     varsayilan: {
         kanalKoruma: true,

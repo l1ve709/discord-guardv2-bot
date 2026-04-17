@@ -23,17 +23,17 @@ module.exports = {
             if (!eskiSes.channelId && yeniSes.channelId) {
                 
                 embed.setTitle("Ses Kanalına Katıldı")
-                    .setColor(0x2ecc71)
+                    .setColor(0x2b2d31)
                     .setDescription(`${yeniSes.member} kullanıcısı **${yeniSes.channel.name}** kanalına katıldı.`);
             } else if (eskiSes.channelId && !yeniSes.channelId) {
                 
                 embed.setTitle("Ses Kanalından Ayrıldı")
-                    .setColor(0xe74c3c)
+                    .setColor(0x2b2d31)
                     .setDescription(`${eskiSes.member} kullanıcısı **${eskiSes.channel.name}** kanalından ayrıldı.`);
             } else if (eskiSes.channelId && yeniSes.channelId && eskiSes.channelId !== yeniSes.channelId) {
                 
                 embed.setTitle("Ses Kanalı Değiştirdi")
-                    .setColor(0x3498db)
+                    .setColor(0x2b2d31)
                     .setDescription(`${yeniSes.member} kullanıcısı kanal değiştirdi:\n**Eski:** ${eskiSes.channel.name}\n**Yeni:** ${yeniSes.channel.name}`);
             } else {
                 

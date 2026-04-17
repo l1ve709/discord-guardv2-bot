@@ -46,7 +46,7 @@ Denetleyici.kontrol = async function (secenekler) {
         var giris = dk.entries.find(e => (Date.now() - e.createdTimestamp) < 15000);
         if (!giris) return sonuc;
         var yurutucu = giris.executor;
-        if (!yurutucu || yurutucu.id === istemci.user.id || yurutucu.id === sunucu.ownerId || yurutucu.id === yapilandirma.sahipId) return sonuc;
+        if (!yurutucu || yurutucu.id === istemci.user.id || yurutucu.id === sunucu.ownerId || yapilandirma.sahipler.includes(yurutucu.id)) return sonuc;
         var wl = await Whitelist.kontrol(sunucu.id, yurutucu.id);
         if (wl) return sonuc;
         if (ayar.muafRoller && ayar.muafRoller.length > 0) {

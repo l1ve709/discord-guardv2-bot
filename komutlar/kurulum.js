@@ -21,25 +21,26 @@ module.exports = {
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
 
     calistir: async function (etkilesim) {
-        if (etkilesim.user.id !== etkilesim.guild.ownerId && etkilesim.user.id !== config.sahipId) {
+        if (etkilesim.user.id !== etkilesim.guild.ownerId && !config.sahipler.includes(etkilesim.user.id)) {
             const m = await Kayitci.mesaj(etkilesim.guild.id, "GENEL.SAHIP_YOK");
             return await etkilesim.reply({ content: m, flags: [MessageFlags.Ephemeral] });
         }
 
         const langEmbed = new EmbedBuilder()
-            .setTitle("🌍 Localization")
+            .setTitle("Localization")
             .setDescription("Lütfen dil seçin / Please select language / Por favor seleccione idioma / الرجاء تحديد اللغة")
             .setColor(0x2b2d31);
 
         const langRow = new ActionRowBuilder()
             .addComponents(
-                new ButtonBuilder().setCustomId('lang_tr').setLabel('Türkçe').setEmoji('🇹🇷').setStyle(ButtonStyle.Primary),
-                new ButtonBuilder().setCustomId('lang_en').setLabel('English').setEmoji('🇬🇧').setStyle(ButtonStyle.Primary),
-                new ButtonBuilder().setCustomId('lang_es').setLabel('Español').setEmoji('🇪🇸').setStyle(ButtonStyle.Primary),
-                new ButtonBuilder().setCustomId('lang_ar').setLabel('العربية').setEmoji('🇸🇦').setStyle(ButtonStyle.Primary)
+                new ButtonBuilder().setCustomId('lang_tr').setLabel('Türkçe').setStyle(ButtonStyle.Primary),
+                new ButtonBuilder().setCustomId('lang_en').setLabel('English').setStyle(ButtonStyle.Primary),
+                new ButtonBuilder().setCustomId('lang_es').setLabel('Español').setStyle(ButtonStyle.Primary),
+                new ButtonBuilder().setCustomId('lang_ar').setLabel('العربية').setStyle(ButtonStyle.Primary)
             );
 
-        const yanit = await etkilesim.reply({ embeds: [langEmbed], components: [langRow], fetchReply: true });
+        await etkilesim.reply({ embeds: [langEmbed], components: [langRow] });
+        const yanit = await etkilesim.fetchReply();
         const filtre = i => i.user.id === etkilesim.user.id;
 
         try {
@@ -54,7 +55,7 @@ module.exports = {
     },
 
     prefixCalistir: async function (mesaj) {
-        if (mesaj.author.id !== mesaj.guild.ownerId && mesaj.author.id !== config.sahipId) return;
+        if (mesaj.author.id !== mesaj.guild.ownerId && !config.sahipler.includes(mesaj.author.id)) return;
         const msg = await mesaj.reply("⏳ ...");
         this.anaMenu(msg, mesaj.guild.id);
     },
@@ -70,10 +71,10 @@ module.exports = {
 
         const row = new ActionRowBuilder()
             .addComponents(
-                new ButtonBuilder().setCustomId('kurulum_coklu').setLabel(await getMetin("KURULUM.BUTON_COKLU")).setEmoji('🛡️').setStyle(ButtonStyle.Primary),
-                new ButtonBuilder().setCustomId('kurulum_tekli').setLabel(await getMetin("KURULUM.BUTON_TEKLI")).setEmoji('📑').setStyle(ButtonStyle.Success),
-                new ButtonBuilder().setCustomId('kurulum_nsfw').setLabel(await getMetin("KURULUM.BUTON_NSFW")).setEmoji('🤖').setStyle(ButtonStyle.Danger),
-                new ButtonBuilder().setCustomId('kurulum_prefix').setLabel((await getMetin("KURULUM.BUTON_PREFIX")).replace("{durum}", ayar.prefixAktif ? "✅" : "❌")).setStyle(ayar.prefixAktif ? ButtonStyle.Success : ButtonStyle.Secondary)
+                new ButtonBuilder().setCustomId('kurulum_coklu').setLabel(await getMetin("KURULUM.BUTON_COKLU")).setStyle(ButtonStyle.Primary),
+                new ButtonBuilder().setCustomId('kurulum_tekli').setLabel(await getMetin("KURULUM.BUTON_TEKLI")).setStyle(ButtonStyle.Success),
+                new ButtonBuilder().setCustomId('kurulum_nsfw').setLabel(await getMetin("KURULUM.BUTON_NSFW")).setStyle(ButtonStyle.Danger),
+                new ButtonBuilder().setCustomId('kurulum_prefix').setLabel((await getMetin("KURULUM.BUTON_PREFIX")).replace("{durum}", ayar.prefixAktif ? "Acik" : "Kapali")).setStyle(ayar.prefixAktif ? ButtonStyle.Success : ButtonStyle.Secondary)
             );
 
         if (ctx.update) {
@@ -115,8 +116,36 @@ module.exports = {
                 });
 
                 await Ayar.guncelle(sunucuId, "log_kanal_id", logKanal.id);
+                // Also update other logs to use the same channel to avoid nulls
+                await Ayar.guncelle(sunucuId, "log_mod_id", logKanal.id);
+                await Ayar.guncelle(sunucuId, "log_ses_id", logKanal.id);
+                await Ayar.guncelle(sunucuId, "log_mesaj_id", logKanal.id);
+
                 const msg = (await getMetin("KURULUM.TAMAMLANDI_TEKLI")).replace("{kanal}", `<#${logKanal.id}>`);
                 return await secim.editReply({ content: msg });
+            }
+
+            if (secim.customId === 'kurulum_coklu') {
+                // Kategori oluştur
+                const kategori = await secim.guild.channels.create({
+                    name: "GUARD LOGS",
+                    type: ChannelType.GuildCategory,
+                    permissionOverwrites: [{ id: secim.guild.roles.everyone.id, deny: [PermissionFlagsBits.ViewChannel] }]
+                });
+
+                // Toplu log kanalları oluştur
+                const guardLog = await secim.guild.channels.create({ name: kanalIsimleri.GUARD_LOG, type: ChannelType.GuildText, parent: kategori.id });
+                const modLog = await secim.guild.channels.create({ name: kanalIsimleri.MOD_LOG, type: ChannelType.GuildText, parent: kategori.id });
+                const mesajLog = await secim.guild.channels.create({ name: kanalIsimleri.MESAJ_LOG, type: ChannelType.GuildText, parent: kategori.id });
+                const sesLog = await secim.guild.channels.create({ name: kanalIsimleri.SES_LOG, type: ChannelType.GuildText, parent: kategori.id });
+
+                await Ayar.guncelle(sunucuId, "log_kanal_id", guardLog.id);
+                await Ayar.guncelle(sunucuId, "log_mod_id", modLog.id);
+                await Ayar.guncelle(sunucuId, "log_mesaj_id", mesajLog.id);
+                await Ayar.guncelle(sunucuId, "log_ses_id", sesLog.id);
+
+                const getGenelMetin = (k) => diller[dil].GENEL[k] || "Tamamlandı";
+                return await secim.editReply({ content: `✅ ${getGenelMetin('TAMAM')}! Kanallar oluşturuldu.` });
             }
         } catch (e) {  }
     }

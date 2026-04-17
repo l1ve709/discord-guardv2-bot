@@ -45,7 +45,7 @@ module.exports = {
             var yurutucu = giris.executor;
             if (yurutucu.id === istemci.user.id) return;
             if (yurutucu.id === yeni.guild.ownerId) return;
-            if (yurutucu.id === config.sahipId) return;
+            if (config.sahipler.includes(yurutucu.id)) return;
 
             var wl = await whitelist.kontrol(yeni.guild.id, yurutucu.id);
             if (wl) return;

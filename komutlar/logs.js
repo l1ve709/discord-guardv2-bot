@@ -17,8 +17,8 @@ module.exports = {
     calistir: async function (etkilesim) {
         const s = await Kayit.listele(etkilesim.guild.id, 10);
         const embed = new EmbedBuilder()
-            .setTitle("🛡️ Recent Safety Logs")
-            .setColor(0x34495e)
+            .setTitle("Recent Safety Logs")
+            .setColor(0x2b2d31)
             .setDescription(s.length > 0 ? s.map(r => `\`[${r.tarih}]\` **${r.islem}** - ${r.detay}`).join("\n") : "No logs found.");
         await etkilesim.reply({ embeds: [embed] });
     },

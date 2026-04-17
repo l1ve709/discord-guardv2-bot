@@ -22,6 +22,12 @@ module.exports = {
         var etiket = await mention.kontrolEt(mesaj);
         if (etiket) return;
 
+        var embedVar = mesaj.embeds && mesaj.embeds.length > 0;
+        var ekVar = mesaj.attachments && mesaj.attachments.size > 0;
+        if (embedVar || ekVar) {
+            console.log("[guardxnsole] [NSFW-TARAMA] Yeni medya tespit edildi, tarama baslatiliyor...");
+        }
+
         var m_nsfw = await nsfw.kontrolEt(mesaj);
         if (m_nsfw) return;
 

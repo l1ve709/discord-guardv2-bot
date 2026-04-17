@@ -22,7 +22,7 @@ Ceza.uygula = async function (sunucu, yurutucu, islem, detay, cezaTuru) {
 
     var basarili = true;
     var hataMesaji = "";
-    var uyguladigimCeza = cezaTuru; 
+    var uyguladigimCeza = cezaTuru;
 
     if (cezaTuru === "banla") {
         if (uye.bannable) {
@@ -71,8 +71,8 @@ Ceza.uygula = async function (sunucu, yurutucu, islem, detay, cezaTuru) {
         for (var i = 0; i < rolIdleri.length; i++) {
             try {
                 await uye.roles.remove(rolIdleri[i], "[guardxnsole] " + islem);
-            } catch (e) { 
-                basarili = false; 
+            } catch (e) {
+                basarili = false;
                 hataMesaji = e.message;
             }
         }
@@ -80,11 +80,11 @@ Ceza.uygula = async function (sunucu, yurutucu, islem, detay, cezaTuru) {
 
     if (!basarili) {
         var yapilandirma = require("../config");
-        var sahipId = yapilandirma.sahipId;
+        var sahipler = yapilandirma.sahipler;
         var ownerId = sunucu.ownerId;
-        var uyariMesaji = `🚨 **ACİL DURUM UYARISI** 🚨\n\n**${sunucu.name}** sunucusunda bir güvenlik ihlali tespit edildi ancak yetkim bu kullanıcıya müdahale etmeye yetmiyor!\n\n**Şüpheli:** ${yurutucu.tag} (ID: ${yurutucu.id})\n**Eylem:** ${islem}\n**Detay:** ${detay}\n**Hata:** ${hataMesaji}\n\n⚠️ Lütfen sunucuya girip manuel müdahale edin!`;
+        var uyariMesaji = `**ACIL DURUM UYARISI** \n\n**${sunucu.name}** sunucusunda bir güvenlik ihlali tespit edildi ancak yetkim bu kullanıcıya müdahale etmeye yetmiyor!\n\n**Şüpheli:** ${yurutucu.tag} (ID: ${yurutucu.id})\n**Eylem:** ${islem}\n**Detay:** ${detay}\n**Hata:** ${hataMesaji}\n\n Lütfen sunucuya girip manuel müdahale edin!`;
 
-        var bildirimGidenler = [sahipId, ownerId];
+        var bildirimGidenler = [...sahipler, ownerId];
         for (var bId of bildirimGidenler) {
             try {
                 var bKullanici = await sunucu.client.users.fetch(bId);

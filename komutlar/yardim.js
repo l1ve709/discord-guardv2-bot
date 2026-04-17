@@ -28,17 +28,17 @@ module.exports = {
         const komutlar = diller[dil].KOMUTLAR;
 
         const g = new EmbedBuilder()
-            .setTitle("🛡️ guardxnsole | Command Center")
-            .setColor(0x3498db)
+            .setTitle("guardxnsole | Command Center")
+            .setColor(0x2b2d31)
             .setDescription(await getMetin("KURULUM.BASLIK"))
             .addFields(
-                { name: "🛡️ Ultimate Guards", value: 
+                { name: "Ultimate Guards", value: 
                     "• Channel Protection (Restore/Delete)\n" +
                     "• Role Protection (Hazardous Perm Detect)\n" +
                     "• Mass Ban/Kick/Emoji Detection\n" +
                     "• Bot & Webhook Guard\n" +
                     "• Raid & Spam Prevention", inline: false },
-                { name: "🚀 Commands", value: 
+                { name: "Commands", value: 
                     Object.values(komutlar).map(k => `\`/${k.ad}\` - ${k.aciklama}`).join("\n"), inline: false }
             )
             .setFooter({ text: "guardxnsole v2.0 • Premium Protection" })

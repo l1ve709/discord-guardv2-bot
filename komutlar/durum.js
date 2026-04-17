@@ -16,10 +16,10 @@ module.exports = {
     calistir: async function (etkilesim) {
         const ayar = await Ayar.getir(etkilesim.guild.id);
         const embed = new EmbedBuilder()
-            .setTitle("🛡️ Protection Status")
-            .setColor(0x2ecc71)
+            .setTitle("Protection Status")
+            .setColor(0x2b2d31)
             .addFields(
-                { name: "Guards", value: `• Channel: ${ayar.kanalKoruma ? "✅" : "❌"}\n• Role: ${ayar.rolKoruma ? "✅" : "❌"}\n• Ban/Kick: ${ayar.banKoruma ? "✅" : "❌"}\n• Webhook: ${ayar.webhookKoruma ? "✅" : "❌"}\n• NSFW: ${ayar.nsfwKoruma ? "✅" : "❌"}`, inline: true },
+                { name: "Guards", value: `• Channel: ${ayar.kanalKoruma ? "On" : "Off"}\n• Role: ${ayar.rolKoruma ? "On" : "Off"}\n• Ban/Kick: ${ayar.banKoruma ? "On" : "Off"}\n• Webhook: ${ayar.webhookKoruma ? "On" : "Off"}\n• NSFW: ${ayar.nsfwKoruma ? "On" : "Off"}`, inline: true },
                 { name: "System", value: `• Prefix: \`${ayar.prefix}\` (${ayar.prefixAktif ? "Active" : "Disabled"})\n• Language: \`${ayar.dil.toUpperCase()}\``, inline: true }
             );
         await etkilesim.reply({ embeds: [embed] });
@@ -27,6 +27,6 @@ module.exports = {
 
     prefixCalistir: async function (mesaj) {
         const ayar = await Ayar.getir(mesaj.guild.id);
-        await mesaj.reply(`🛡️ **Status:**\nPrefix: \`${ayar.prefix}\` | Lang: \`${ayar.dil.toUpperCase()}\` | Guards: ${ayar.kanalKoruma ? "✅" : "❌"}`);
+        await mesaj.reply(`**Status:**\nPrefix: \`${ayar.prefix}\` | Lang: \`${ayar.dil.toUpperCase()}\` | Guards: ${ayar.kanalKoruma ? "On" : "Off"}`);
     }
 };
